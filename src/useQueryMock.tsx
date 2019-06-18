@@ -3,24 +3,20 @@ import React from 'react';
 export type MockState = {
   data: any;
   loading: boolean;
-  error: any;
+  error: null | Error;
 };
 
 export type MockAction = {
   data?: any;
-  error?: ErrorType;
+  error?: Error;
   type: string;
 };
 
-export type ErrorType = {
-  message: string;
-};
-
-export type QueryType = Object | Function;
+export type Query = Object | Function;
 
 export type Options = {
-  error?: ErrorType;
-  variables?: Object;
+  error?: Error | null;
+  variables?: Object | null;
 };
 
 const ACTIONS = {
@@ -61,10 +57,8 @@ function reducer(state: MockState, action: MockAction): MockState {
   }
 }
 
-export function useQueryMock(
-  query: QueryType,
-  { error, variables }: Options = {}
-) {
+export function useQueryMock(query: Query, opts: Options) {
+  const { error = null, variables = null } = opts || {};
   const timer = React.useRef<any>();
 
   const [state, dispatch] = React.useReducer(reducer, {
@@ -86,6 +80,11 @@ export function useQueryMock(
 
         if (query) {
           if (typeof query === 'function') {
+            if (!variables) {
+              throw new Error(
+                'useQueryMock: You must provide variables if your query is function'
+              );
+            }
             dispatch({ type: ACTIONS.SET_DATA, data: query(variables) });
             return;
           }
