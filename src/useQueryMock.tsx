@@ -16,8 +16,9 @@ export type ErrorType = {
   message: string;
 };
 
+export type QueryType = Object | Function;
+
 export type Options = {
-  query?: Object | Function;
   error?: ErrorType;
   variables?: Object;
 };
@@ -60,7 +61,7 @@ function reducer(state: MockState, action: MockAction): MockState {
   }
 }
 
-export function useQueryMock({ query, error, variables }: Options) {
+export function useQueryMock(query: QueryType, { error, variables }: Options) {
   const timer = React.useRef<any>();
 
   const [state, dispatch] = React.useReducer(reducer, {
