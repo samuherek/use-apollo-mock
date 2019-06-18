@@ -1,0 +1,61 @@
+{
+  "name": "use-apollo-mock",
+  "version": "0.0.1",
+  "description": "React hook for react-apollo-hooks like prototyping frontend",
+  "author": "Sam Uherek",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samuherek/use-apollo-mock.git"
+  },
+  "bugs": {
+    "url": "https://github.com/samuherek/use-apollo-mock/issues"
+  },
+  "keywords": [
+    "apollo",
+    "graphql",
+    "react",
+    "react apollo",
+    "react hooks",
+    "react apollo hooks"
+  ],
+  "homepage": "https://github.com/samuherek/use-apollo-mock#readme",
+  "main": "dist/index.js",
+  "umd:main": "dist/use-apollo-mock.umd.production.js",
+  "module": "dist/use-apollo-mock.es.production.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test --eng=jsdon"
+  },
+  "peerDependencies": {
+    "react": ">=16"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "devDependencies": {
+    "@types/react": "^16.8.20",
+    "@types/react-dom": "^16.8.4",
+    "husky": "^2.4.1",
+    "prettier": "^1.18.2",
+    "pretty-quick": "^1.11.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "tsdx": "^0.6.1",
+    "tslib": "^1.10.0",
+    "typescript": "^3.5.2"
+  }
+}
