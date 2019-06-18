@@ -61,7 +61,10 @@ function reducer(state: MockState, action: MockAction): MockState {
   }
 }
 
-export function useQueryMock(query: QueryType, { error, variables }: Options) {
+export function useQueryMock(
+  query: QueryType,
+  { error, variables }: Options = {}
+) {
   const timer = React.useRef<any>();
 
   const [state, dispatch] = React.useReducer(reducer, {
