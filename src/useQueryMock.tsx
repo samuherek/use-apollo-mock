@@ -1,95 +1,55 @@
 import React from 'react';
+import { useApolloMock } from './ApolloMockProvider';
 
-export type MockState = {
-  data: any;
-  loading: boolean;
-  error: null | Error;
-};
-
-export type MockAction = {
-  data?: any;
-  error?: Error;
-  type: string;
-};
-
-export type Query = Object | Function;
+export type Query = any;
 
 export type Options = {
   error?: Error | null;
   variables?: Object | null;
+  data?: any;
 };
 
-const ACTIONS = {
-  SET_LOADING: 'SET_LOADING',
-  SET_ERROR: 'SET_ERROR',
-  SET_DATA: 'SET_DATA',
-};
+function useQueryMock(query: Query, opts: Options) {
+  const {
+    error = null,
+    // variables = null,
+    data = null,
+  } = opts || {};
 
-function reducer(state: MockState, action: MockAction): MockState {
-  switch (action.type) {
-    case ACTIONS.SET_DATA: {
-      if (action.data) {
-        return {
-          ...state,
-          loading: false,
-          data: action.data,
-        };
-      }
-      throw new Error(
-        `You must provider "data" for action type: ${action.type}`
-      );
-    }
-    case ACTIONS.SET_ERROR: {
-      if (action.error) {
-        return {
-          ...state,
-          loading: false,
-          error: action.error,
-        };
-      }
-      throw new Error(
-        `You must provider "error" for action type: ${action.type}`
-      );
-    }
-    default: {
-      throw new Error(`Unhandled action type: ${action.type}`);
-    }
-  }
-}
-
-export function useQueryMock(query: Query, opts: Options) {
-  const { error = null, variables = null } = opts || {};
   const timer = React.useRef<any>();
+  const { state, setQueryStart, setQueryDone, setQueryError } = useApolloMock();
 
-  const [state, dispatch] = React.useReducer(reducer, {
-    data: null,
-    loading: true,
-    error: null,
-  });
+  const queryName = query.definitions[0].name.value;
 
   React.useEffect(() => {
+    if (state.queries[queryName]) {
+      return;
+    }
+
     if (!timer.current) {
+      setQueryStart(queryName);
+
       timer.current = setTimeout(() => {
         if (error) {
           if (typeof error !== 'object' || !error.message) {
             throw new Error('useQueryMock: you provided incorrect error');
           }
-          dispatch({ type: ACTIONS.SET_ERROR, error });
+          setQueryError(queryName, error);
           return;
         }
 
         if (query) {
-          if (typeof query === 'function') {
-            if (!variables) {
-              throw new Error(
-                'useQueryMock: You must provide variables if your query is function'
-              );
-            }
-            dispatch({ type: ACTIONS.SET_DATA, data: query(variables) });
-            return;
-          }
+          // if (typeof query === 'function') {
+          //   if (!variables) {
+          //     throw new Error(
+          //       'useQueryMock: You must provide variables if your query is function'
+          //     );
+          //   }
+          //   setQueryDone(queryName, query(variables));
+          //   return;
+          // }
           if (typeof query === 'object') {
-            dispatch({ type: ACTIONS.SET_DATA, data: query });
+            setQueryDone(queryName, data);
             return;
           }
           throw new Error('useQueryMock: you provided incorrect query');
@@ -107,11 +67,14 @@ export function useQueryMock(query: Query, opts: Options) {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [query]);
 
   return {
-    data: state.data,
-    loading: state.loading,
-    error: state.error,
+    data: null,
+    loading: true,
+    error: null,
+    ...state.queries[queryName],
   };
 }
+
+export { useQueryMock };
